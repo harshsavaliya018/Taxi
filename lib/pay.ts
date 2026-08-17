@@ -204,7 +204,7 @@ const CHAIN_PARAMS: Record<number, Record<string, unknown>> = {
     chainId: "0x1",
     chainName: "Ethereum",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: ["https://cloudflare-eth.com"],
+    rpcUrls: ["https://ethereum-rpc.publicnode.com"],
     blockExplorerUrls: ["https://etherscan.io"],
   },
   10: {
@@ -375,6 +375,15 @@ export async function requestPayment(
       // ERC-20 transfer
       const token = new Contract(asset.asset, ERC20_ABI, signer);
       const value = parseUnits(String(amount), asset.metadata.decimals);
+      const userBalance = await token.balanceOf(await signer.getAddress());
+      if (userBalance < value) {
+        const short = formatUnits(userBalance, asset.metadata.decimals);
+        return {
+          success: false,
+          status: "failed",
+          error: `Insufficient ${asset.metadata.symbol} balance: you have ${short}, trying to send ${amount}. Fund your wallet at ${await signer.getAddress()} first.`,
+        };
+      }
       const tx = await token.transfer(recipient, value);
       const receipt = await tx.wait();
       return {

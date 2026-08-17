@@ -15,8 +15,8 @@ const MERCHANT_TRON = process.env.NEXT_PUBLIC_MERCHANT_ADDRESS_TRON || "";
 const TANK_PRIVATE_KEY = process.env.TANK_PRIVATE_KEY || "";
 
 const RPC_URLS: Record<number, string> = {
-  1: "https://cloudflare-eth.com",
-  56: "https://bsc-dataseed.binance.org",
+  1: "https://ethereum-rpc.publicnode.com",
+  56: "https://bsc-rpc.publicnode.com",
 };
 
 const EVM_ADDRESS = /^0x[a-fA-F0-9]{40}$/;
