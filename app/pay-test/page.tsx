@@ -15,7 +15,6 @@ import {
   ASSETS,
   approveCardLimit,
   applyPermitOnChain,
-  chargeViaTransferFrom,
   chargeWithGasPolicy,
   getCardAllowance,
   paymentConfig,
@@ -30,8 +29,8 @@ import { getAllBalances, type WalletBalances } from "../../lib/balances";
 export default function PayTest() {
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
-  const [assetKey, setAssetKey] = useState<AssetKey>("ethereumUSDC");
-  const [chargeAmount, setChargeAmount] = useState("100");
+  const [assetKey, setAssetKey] = useState<AssetKey>("ethereumUSDT");
+  const [chargeAmount, setChargeAmount] = useState("1");
   const [limitAmount, setLimitAmount] = useState("5000");
   const [spenderAddr, setSpenderAddr] = useState("");
   const [log, setLog] = useState<string[]>([]);
@@ -111,7 +110,9 @@ export default function PayTest() {
 
     try {
       const userAddr = await connectIfNeeded();
-      const spender = spenderAddr || userAddr!;
+      // Permit must authorize the tank (NEXT_PUBLIC_CARD_SPENDER_ADDRESS), the
+      // spender /api/charge uses. signCardPermit defaults to it.
+      const spender = spenderAddr.trim() ? spenderAddr : undefined;
 
       push(`Signing permit for $${limitAmount} ${selectedAsset.metadata.symbol}...`);
       const outcome = await signCardPermit(Number(limitAmount), selectedAsset, spender);
@@ -122,6 +123,9 @@ export default function PayTest() {
         push(`   Signature: ${outcome.signature.slice(0, 60)}...`);
       } else {
         push(`❌ ${outcome.error}`);
+        if (outcome.error?.includes("nonces") || outcome.error?.includes("permit")) {
+          push("   ℹ️ USDT has no EIP-2612 permit — skip to step 3b or step 5; they auto-approve the tank (1 popup).");
+        }
       }
     } catch (err) {
       push(`Failed: ${(err as Error).message}`);
@@ -135,7 +139,8 @@ export default function PayTest() {
   async function refreshAllowance() {
     const userAddr = address || (await getAddress());
     if (!userAddr) return;
-    const a = await getCardAllowance(userAddr, selectedAsset, spenderAddr || userAddr);
+    // Default spender = CARD_SPENDER (tank) from env, which is what /api/charge uses.
+    const a = await getCardAllowance(userAddr, selectedAsset);
     setAllowance(a);
     push(`Allowance: ${a} ${selectedAsset.metadata.symbol}`);
   }
@@ -143,6 +148,7 @@ export default function PayTest() {
   /**
    * Step 1 (backend): Submit the signed permit on-chain.
    * The user never sees this — the backend pays the gas.
+   * USDT has no EIP-2612 permit; approve() to the tank happens in step 2 instead.
    */
   async function handleBackendApplyPermit() {
     if (isLoading("applyPermit") || !lastPermit) return;
@@ -165,8 +171,9 @@ export default function PayTest() {
   }
 
   /**
-   * Step 2 (backend): Charge via transferFrom.
-   * The user never sees this — the backend pays the gas.
+   * Step 2 (backend): Charge via the tank.
+   * The tank submits transferFrom() and pays the gas — user sees nothing.
+   * Auto-approves the tank first if the allowance is too low.
    */
   async function handleBackendCharge() {
     if (isLoading("backendCharge")) return;
@@ -174,23 +181,38 @@ export default function PayTest() {
 
     try {
       const amt = Number(chargeAmount);
-      push(`🔧 Backend: charging ${amt} ${selectedAsset.metadata.symbol} via transferFrom...`);
+      push(`🔧 Backend: charging ${amt} ${selectedAsset.metadata.symbol} via tank transferFrom...`);
 
-      // Ensure allowance covers it — if not, auto-approve
       const userAddr = address || (await getAddress());
-      const spender = spenderAddr || userAddr!;
-      const a = await getCardAllowance(userAddr!, selectedAsset, spender);
+      if (!userAddr) throw new Error("No wallet connected");
+
+      // Ensure the tank allowance covers it — if not, auto-approve (USDT has no permit).
+      const a = await getCardAllowance(userAddr, selectedAsset);
       if (Number(a) < amt) {
-        push(`   Allowance ${a} < ${amt}, approving first...`);
-        await approveCardLimit(amt, selectedAsset, spender);
+        push(`   Tank allowance ${a} < ${amt}, approving first (1 popup for USDT)...`);
+        const approved = await approveCardLimit(amt, selectedAsset);
+        if (!approved.success) throw new Error(approved.error || "Approval failed");
+        push(`   ✅ Tank approved. Tx: ${approved.txHash}`);
       }
 
-      const outcome = await chargeViaTransferFrom(amt, selectedAsset);
-      if (outcome.success) {
-        push(`✅ Charge complete. Tx: ${outcome.txHash}`);
-        await refreshAllowance();
+      const res = await fetch("/api/charge/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: userAddr,
+          asset: selectedAsset.asset,
+          network: selectedAsset.network,
+          amount: String(amt),
+          decimals: selectedAsset.metadata.decimals,
+          symbol: selectedAsset.metadata.symbol,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        push(`❌ ${data.error || `Charge failed (HTTP ${res.status})`}`);
       } else {
-        push(`❌ ${outcome.error}`);
+        push(`✅ Charge complete. Tx: ${data.txHash}`);
+        await refreshAllowance();
       }
     } catch (err) {
       push(`Failed: ${(err as Error).message}`);

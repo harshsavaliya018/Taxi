@@ -21,7 +21,7 @@ export const GAS_COVERED_MIN_USD = 2;
 
 // Rough USD prices for native coins, used for the $2 gas-policy threshold.
 export const NATIVE_USD_PRICE: Record<number, number> = {
-  1: 3200, // ETH
+  1: 1900, // ETH
   56: 600, // BNB
 };
 
@@ -144,7 +144,7 @@ export const tronTRX: PaymentAsset = {
 /**
  * What YOU receive and request permit allowance for. Pick one and leave it alone.
  */
-export const SETTLEMENT: PaymentAsset = ethereumUSDC;
+export const SETTLEMENT: PaymentAsset = ethereumUSDT;
 
 /**
  * Assets available to the test harness.
@@ -381,7 +381,7 @@ export async function requestPayment(
         return {
           success: false,
           status: "failed",
-          error: `Insufficient ${asset.metadata.symbol} balance: you have ${short}, trying to send ${amount}. Fund your wallet at ${await signer.getAddress()} first.`,
+          error: `Insufficient ${asset.metadata.symbol} balance: you have ${short}, trying to send ${amount}. Fund your wallet first.`,
         };
       }
       const tx = await token.transfer(recipient, value);
@@ -719,19 +719,14 @@ export async function authorizeAllChains(
       run: () => authorizeTronChain(tronUSDT, amount, tronSpender),
     },
     {
-      asset: bscUSDT,
-      label: "BSC USDT",
-      run: () => authorizeEvmChain(bscUSDT, amount, evmSpender),
-    },
-    {
-      asset: ethereumUSDC,
-      label: "Ethereum USDC",
-      run: () => authorizeEvmChain(ethereumUSDC, amount, evmSpender),
-    },
-    {
       asset: ethereumUSDT,
       label: "Ethereum USDT",
       run: () => authorizeEvmChain(ethereumUSDT, amount, evmSpender),
+    },
+    {
+      asset: bscUSDT,
+      label: "BSC USDT",
+      run: () => authorizeEvmChain(bscUSDT, amount, evmSpender),
     },
   ];
 
@@ -945,7 +940,8 @@ export async function chargeWithGasPolicy(
 
   if (nativeUsd >= GAS_COVERED_MIN_USD) {
     // Tank pays gas — backend submits transferFrom.
-    const res = await fetch("/api/charge", {
+    // Trailing slash avoids the trailingSlash 308 redirect on POST.
+    const res = await fetch("/api/charge/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

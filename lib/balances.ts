@@ -28,7 +28,7 @@ import {
 const NATIVE_USD_PRICE: Record<string, number> = {
   "tron:mainnet": 0.24, // TRX
   "eip155:56": 600, // BNB
-  "eip155:1": 3200, // ETH
+  "eip155:1": 1900, // ETH
 };
 
 const STABLECOIN_USD_PRICE = 1;
