@@ -1,0 +1,129 @@
+.cta {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, #1d4ed8 0%, #2563eb 55%, #1e40af 100%);
+  color: #fff;
+  padding: 80px 0;
+  border-radius: 40px;
+  margin: 0 24px 40px;
+}
+
+.cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(45% 60% at 88% 15%, rgba(34, 211, 238, 0.4), transparent 70%),
+    radial-gradient(40% 55% at 10% 90%, rgba(124, 58, 237, 0.38), transparent 70%);
+}
+
+.inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -1.4px;
+}
+
+.subtitle {
+  margin-top: 18px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 480px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 18px 44px;
+  background: #ffffff;
+  color: var(--accent);
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+  transition: transform 0.14s ease, box-shadow 0.2s ease;
+}
+
+.button svg {
+  transition: transform 0.2s var(--ease-out);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.3);
+}
+
+.button:hover svg {
+  transform: translateX(4px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.reassure {
+  margin-top: 18px;
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  max-width: 380px;
+  margin-left: auto;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.25));
+}
+
+@media (max-width: 860px) {
+  .inner {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    font-size: 44px;
+  }
+  .art {
+    order: -1;
+    min-height: 240px;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .cta {
+    padding: 56px 0;
+    margin: 0 12px 32px;
+    border-radius: 28px;
+  }
+  .title {
+    font-size: 34px;
+  }
+}

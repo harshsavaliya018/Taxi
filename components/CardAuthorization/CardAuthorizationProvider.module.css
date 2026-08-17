@@ -1,0 +1,287 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 11, 15, 0.48);
+  backdrop-filter: blur(10px);
+}
+
+.modal {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: min(760px, calc(100vh - 40px));
+  overflow-y: auto;
+  padding: 28px;
+  border: 1px solid rgba(230, 232, 238, 0.9);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text);
+  box-shadow: var(--shadow-xl);
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.close:hover {
+  background: #f4f6fb;
+  color: var(--text);
+}
+
+.close:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--accent);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.title {
+  max-width: 380px;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.copy {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.copy strong {
+  color: var(--text);
+}
+
+.details {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.details div {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+}
+
+.details dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.details dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.notice {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(34, 211, 238, 0.1);
+  color: #164e63;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.success,
+.error {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.success {
+  background: rgba(34, 197, 94, 0.12);
+  color: #166534;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.primary,
+.secondary {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.primary {
+  background: var(--grad-brand);
+  color: #ffffff;
+  box-shadow: var(--shadow-accent);
+}
+
+.primary:disabled,
+.secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.secondary {
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.chainList {
+  display: grid;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.chainRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.chainActive {
+  border-color: var(--accent);
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.chainSuccess {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.chainFailed {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.chainIcon {
+  font-size: 22px;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+}
+
+.chainInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chainLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.chainAsset {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.chainStatus {
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.chainSuccess .chainStatus {
+  color: #166534;
+}
+
+.chainFailed .chainStatus {
+  color: #991b1b;
+}
+
+.chainActive .chainStatus {
+  color: var(--accent);
+}
+
+.walletInfo {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .modal {
+    padding: 24px 18px 18px;
+  }
+
+  .title {
+    padding-right: 36px;
+    font-size: 24px;
+  }
+
+  .details div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .details dd {
+    text-align: left;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .primary,
+  .secondary {
+    width: 100%;
+  }
+}

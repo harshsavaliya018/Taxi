@@ -1,0 +1,40 @@
+.btn {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  z-index: 85;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--grad-brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-accent);
+  opacity: 0;
+  transform: translateY(16px) scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s var(--ease-out),
+    filter 0.2s ease;
+}
+
+.visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .btn {
+    right: 20px;
+    bottom: 84px;
+    width: 48px;
+    height: 48px;
+  }
+}
